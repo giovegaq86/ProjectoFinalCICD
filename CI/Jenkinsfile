@@ -1,38 +1,55 @@
 pipeline {
     agent any
     stages {
-        stage('When') {
-            when {
-                not {
-                    branch "main"
+        stage('Run API scripts with Newman') {
+            steps {
+                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                    sh '''
+                    cd Api/Postman
+                    newman run ExamenFinalGiovanni.postman_collection.json -e finalproject_env.postman_environment.json
+                    '''
                 }
             }
-            steps {
-                echo 'Hola'
-            }
         }
-        stage('Confirmation 1') {
-                steps {
-                    input('Do you want to proceed?')
+        stage('Run API scripts with RestAssured') {
+            steps {
+                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                    sh '''
+                        cd Api/RESTAssured
+                        mvn clean test
+                        '''
                 }
-        }
-        stage('GoodBye') {
-            steps {
-                echo 'Good Bye'
-                echo 'GoodBye 3'
             }
         }
-        stage('Confirmation 2') {
-                steps {
-                    input('Do you want to proceed?')
+        stage('Run Jmeter scripts') {
+            steps {
+                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                    sh '''
+                        export PATH=/home/pjcalvov/jmeter/apache-jmeter-5.3/bin:$PATH
+                        cd Load
+                        jmeter -n -t FinalProjectGiovanniVega.jmx -l TestResults.csv
+                        ls
+                    '''
                 }
-        }
-        
-        stage('Stage3') {
-            steps {
-                echo 'Good Bye'
-                echo 'GoodBye 4'
             }
+        }
+    }
+    post{
+        success{
+            emailext (
+                to: "${email}",
+                subject: "Job '${env.JOB_NAME}' (${env.BUILD_NUMBER}) success.",
+                body: "Please visit ${env.BUILD_URL} for further information.",
+                from: 'jenkins@company.com',
+                attachmentsPattern: 'Load/TestResults.csv')
+        }
+        failure{
+            emailext (
+                to: "${email}",
+                subject: "Job '${env.JOB_NAME}' (${env.BUILD_NUMBER}) failed.",
+                body: "Please visit ${env.BUILD_URL} for further information.",
+                from: 'jenkins@company.com',
+                attachmentsPattern: 'Load/TestResults.csv')
         }
     }
 }

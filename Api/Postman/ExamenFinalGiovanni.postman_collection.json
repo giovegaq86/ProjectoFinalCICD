@@ -35,41 +35,33 @@
 		},
 		{
 			"name": "GetRandomNameWithoutAuth",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "ee68c87e-1aab-474d-a8c0-95f9a42f3970",
+						"exec": [
+							"var jsonData = pm.response.json()",
+							"",
+							"pm.test(\"Body is correct\", function () {",
+							"    pm.expect(jsonData.message).to.eql(\"Please login first\")",
+							"});",
+							"",
+							"pm.test(\"Status code is 401\", function () {",
+							"    pm.response.to.have.status(401);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"method": "GET",
-				"header": [
-					{
-						"key": "Authorization",
-						"value": "Basic dGVzdHVzZXI6dGVzdHBhc3M="
-					}
-				],
+				"header": [],
 				"url": {
 					"raw": "{{base_url}}randomName",
 					"host": [
 						"{{base_url}}randomName"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "SameName",
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"name\": \"Triple H\"\n}"
-				},
-				"url": {
-					"raw": "{{base_url}}sameName",
-					"host": [
-						"{{base_url}}sameName"
 					]
 				}
 			},
@@ -120,12 +112,8 @@
 					"script": {
 						"id": "ef2222e9-8d4e-40ea-988e-e51200014661",
 						"exec": [
-							"pm.test(\"Body is correct\", function () {",
-							"    pm.response.to.have.body('{\"message\":\"Please login first\"}');",
-							"});",
-							"",
-							"pm.test(\"Status code is 401\", function () {",
-							"    pm.response.to.have.status(401);",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
 							"});"
 						],
 						"type": "text/javascript"
@@ -160,6 +148,29 @@
 					"raw": "{{base_url}}randomName",
 					"host": [
 						"{{base_url}}randomName"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SameName",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Triple H\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}sameName",
+					"host": [
+						"{{base_url}}sameName"
 					]
 				}
 			},

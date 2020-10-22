@@ -1,0 +1,2 @@
+# JMeter generated Authorization file
+${base_url}${random_name_endpoint}	testuser	testpass			BASIC
